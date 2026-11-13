@@ -7,6 +7,8 @@ import SetupModal from './components/SetupModal';
 import ScorecardModal from './components/ScorecardModal';
 import QuestionGeneratorModal from './components/QuestionGeneratorModal';
 import LoginPage from './components/LoginPage';
+import StudentHub from './components/StudentHub';
+import OfficerDashboard from './components/OfficerDashboard';
 import { TRACKS } from './data/questionBank';
 import { conductInterviewTurn, generateDiagnosticScorecard } from './services/geminiService';
 
@@ -26,6 +28,11 @@ export default function App() {
       role: 'student',
       college: 'Engineering Institute of Technology'
     };
+  });
+
+  // Active View State: 'student-hub' | 'interview-studio' | 'officer-dashboard'
+  const [currentView, setCurrentView] = useState(() => {
+    return user?.role === 'officer' ? 'officer-dashboard' : 'student-hub';
   });
 
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('GEMINI_API_KEY') || '');
@@ -81,6 +88,7 @@ export default function App() {
   const handleLogin = (userData) => {
     setUser(userData);
     setCandidateName(userData.name);
+    setCurrentView(userData.role === 'officer' ? 'officer-dashboard' : 'student-hub');
     localStorage.setItem('APP_USER', JSON.stringify(userData));
   };
 
@@ -97,7 +105,7 @@ export default function App() {
   // Session Timer
   useEffect(() => {
     let timer = null;
-    if (user && isInterviewActive && !isScorecardOpen) {
+    if (user && isInterviewActive && currentView === 'interview-studio' && !isScorecardOpen) {
       timer = setInterval(() => {
         setDurationSeconds(prev => {
           const next = prev + 1;
@@ -108,7 +116,7 @@ export default function App() {
       }, 1000);
     }
     return () => clearInterval(timer);
-  }, [user, isInterviewActive, isScorecardOpen]);
+  }, [user, isInterviewActive, currentView, isScorecardOpen]);
 
   // Speech Recognition (Web Speech API)
   useEffect(() => {
@@ -288,7 +296,17 @@ export default function App() {
     setIsInterviewActive(true);
     setIsSetupOpen(false);
     setIsScorecardOpen(false);
+    setCurrentView('interview-studio');
     speakAiResponse(initialGreeting);
+  };
+
+  const handleLaunchTrackFromHub = (track, question) => {
+    handleStartInterview({
+      candidateName: user?.name || 'Shagun Mehta',
+      track,
+      question,
+      role: track.defaultRole
+    });
   };
 
   const handleSelectGeneratedQuestion = (generatedQ) => {
@@ -333,7 +351,7 @@ export default function App() {
       isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-100 text-slate-900'
     }`}>
       
-      {/* Top Navbar with Theme Switcher & Logout */}
+      {/* Top Navbar with Multi-Page Navigation, Theme Switcher & Logout */}
       <Navbar
         apiKey={apiKey}
         onOpenSettings={() => setIsSetupOpen(true)}
@@ -347,47 +365,68 @@ export default function App() {
         onToggleTheme={toggleTheme}
         user={user}
         onLogout={handleLogout}
+        currentView={currentView}
+        onChangeView={setCurrentView}
       />
 
-      {/* Main Studio: 3 Columns */}
-      <main className="flex-1 p-3 grid grid-cols-1 lg:grid-cols-12 gap-3 h-[calc(100vh-3.5rem)] overflow-hidden">
-        
-        {/* Left: Video Presence & Telemetry (3 cols) */}
-        <div className="lg:col-span-3 h-full overflow-hidden">
-          <VideoFeed
-            candidateName={candidateName}
-            isAiSpeaking={isAiSpeaking}
-            isCandidateSpeaking={isCandidateSpeaking}
-            telemetry={telemetry}
-            isRecording={isRecording}
-          />
-        </div>
+      {/* VIEW 1: Student Practice Hub */}
+      {currentView === 'student-hub' && (
+        <StudentHub
+          user={user}
+          onLaunchInterview={handleLaunchTrackFromHub}
+          theme={theme}
+        />
+      )}
 
-        {/* Center: LeetCode-grade Code Canvas & Real Runner (5 cols) */}
-        <div className="lg:col-span-5 h-full overflow-hidden">
-          <CodeCanvas
-            question={currentQuestion}
-            code={code}
-            onChangeCode={setCode}
-            onSubmitCodeReview={handleAskCodeReview}
-            isReviewingCode={isReviewingCode}
-            onOpenQuestionGenerator={() => setIsGeneratorOpen(true)}
-          />
-        </div>
+      {/* VIEW 2: College Placement Cell (T&P Admin) Dashboard */}
+      {currentView === 'officer-dashboard' && (
+        <OfficerDashboard
+          user={user}
+          theme={theme}
+        />
+      )}
 
-        {/* Right: Live Interview Dialogue (4 cols) */}
-        <div className="lg:col-span-4 h-full overflow-hidden">
-          <TranscriptPanel
-            transcript={transcript}
-            onSendCandidateTurn={handleCandidateTurn}
-            isAiThinking={isAiThinking}
-            isRecording={isRecording}
-            onToggleRecording={toggleRecording}
-            onAskHint={handleAskHint}
-          />
-        </div>
+      {/* VIEW 3: Main Live Interview Studio */}
+      {currentView === 'interview-studio' && (
+        <main className="flex-1 p-3 grid grid-cols-1 lg:grid-cols-12 gap-3 h-[calc(100vh-3.5rem)] overflow-hidden">
+          
+          {/* Left: Video Presence & Telemetry (3 cols) */}
+          <div className="lg:col-span-3 h-full overflow-hidden">
+            <VideoFeed
+              candidateName={candidateName}
+              isAiSpeaking={isAiSpeaking}
+              isCandidateSpeaking={isCandidateSpeaking}
+              telemetry={telemetry}
+              isRecording={isRecording}
+            />
+          </div>
 
-      </main>
+          {/* Center: LeetCode-grade Code Canvas & Real Runner (5 cols) */}
+          <div className="lg:col-span-5 h-full overflow-hidden">
+            <CodeCanvas
+              question={currentQuestion}
+              code={code}
+              onChangeCode={setCode}
+              onSubmitCodeReview={handleAskCodeReview}
+              isReviewingCode={isReviewingCode}
+              onOpenQuestionGenerator={() => setIsGeneratorOpen(true)}
+            />
+          </div>
+
+          {/* Right: Live Interview Dialogue (4 cols) */}
+          <div className="lg:col-span-4 h-full overflow-hidden">
+            <TranscriptPanel
+              transcript={transcript}
+              onSendCandidateTurn={handleCandidateTurn}
+              isAiThinking={isAiThinking}
+              isRecording={isRecording}
+              onToggleRecording={toggleRecording}
+              onAskHint={handleAskHint}
+            />
+          </div>
+
+        </main>
+      )}
 
       {/* Dynamic AI Question Generator Modal */}
       <QuestionGeneratorModal

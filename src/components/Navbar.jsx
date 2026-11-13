@@ -1,5 +1,5 @@
 import React from 'react';
-import { Target, Settings, Clock, Mic, MicOff, PhoneOff, Sun, Moon, LogOut } from 'lucide-react';
+import { Target, Settings, Clock, Mic, MicOff, PhoneOff, Sun, Moon, LogOut, LayoutDashboard, Code2, ShieldCheck } from 'lucide-react';
 
 export default function Navbar({
   apiKey,
@@ -13,7 +13,9 @@ export default function Navbar({
   theme,
   onToggleTheme,
   user,
-  onLogout
+  onLogout,
+  currentView,
+  onChangeView
 }) {
   const formatTime = (secs) => {
     const m = Math.floor(secs / 60);
@@ -28,28 +30,62 @@ export default function Navbar({
       isDark ? 'border-slate-800 bg-slate-900/90 text-slate-100' : 'border-slate-200 bg-white/95 text-slate-900 shadow-sm'
     }`}>
       
-      {/* Brand & User Greeting */}
-      <div className="flex items-center gap-3">
-        <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-sm">
-          <Target className="h-4 w-4" />
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
+      {/* Brand & Left Navigation Links */}
+      <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => onChangeView('student-hub')}>
+          <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-sm">
+            <Target className="h-4 w-4" />
+          </div>
+          <div>
             <h1 className="font-semibold text-sm tracking-tight font-sans">
               PlacementPilot <span className="text-blue-500 font-bold">AI</span>
             </h1>
-            <span className={`text-[10px] px-2 py-0.5 rounded border ${
-              isDark ? 'bg-slate-800 text-slate-400 border-slate-700' : 'bg-slate-100 text-slate-600 border-slate-200'
-            }`}>
-              {user?.role === 'officer' ? 'T&P Officer Portal' : 'Interview Studio'}
-            </span>
           </div>
         </div>
+
+        {/* Multi-Page Navigation Tabs */}
+        <nav className="hidden md:flex items-center gap-1 text-xs">
+          <button
+            onClick={() => onChangeView('student-hub')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition ${
+              currentView === 'student-hub'
+                ? 'bg-blue-600 text-white shadow-sm'
+                : isDark ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <LayoutDashboard className="h-3.5 w-3.5" />
+            <span>Practice Hub</span>
+          </button>
+
+          <button
+            onClick={() => onChangeView('interview-studio')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition ${
+              currentView === 'interview-studio'
+                ? 'bg-blue-600 text-white shadow-sm'
+                : isDark ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <Code2 className="h-3.5 w-3.5" />
+            <span>Live Studio</span>
+          </button>
+
+          <button
+            onClick={() => onChangeView('officer-dashboard')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition ${
+              currentView === 'officer-dashboard'
+                ? 'bg-blue-600 text-white shadow-sm'
+                : isDark ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <ShieldCheck className="h-3.5 w-3.5" />
+            <span>College Admin</span>
+          </button>
+        </nav>
       </div>
 
-      {/* Center Stage & Timer */}
-      {isInterviewActive && (
-        <div className={`flex items-center gap-3 px-3.5 py-1 rounded-full text-xs border ${
+      {/* Center Stage & Timer (Only in Interview Studio) */}
+      {currentView === 'interview-studio' && isInterviewActive && (
+        <div className={`hidden lg:flex items-center gap-3 px-3.5 py-1 rounded-full text-xs border ${
           isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200 text-slate-700'
         }`}>
           <div className="flex items-center gap-1.5 font-mono text-[11px]">
@@ -66,7 +102,7 @@ export default function Navbar({
 
       {/* Right Controls */}
       <div className="flex items-center gap-2">
-        {isInterviewActive && (
+        {currentView === 'interview-studio' && isInterviewActive && (
           <>
             <button
               onClick={onToggleRecording}
@@ -82,7 +118,7 @@ export default function Navbar({
 
             <button
               onClick={onFinishInterview}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-600 hover:bg-red-500 text-white transition shadow-sm"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-red-600 hover:bg-red-500 text-white transition shadow-sm"
               title="End Interview and View Report"
             >
               <PhoneOff className="h-3.5 w-3.5" />
@@ -118,7 +154,7 @@ export default function Navbar({
           <div className="flex items-center gap-2 pl-2 border-l border-slate-700/40">
             <div className="text-right hidden sm:block">
               <div className="text-[11px] font-semibold leading-tight">{user.name}</div>
-              <div className={`text-[9px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{user.college?.slice(0, 18)}...</div>
+              <div className={`text-[9px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{user.college?.slice(0, 16)}...</div>
             </div>
             <button
               onClick={onLogout}
