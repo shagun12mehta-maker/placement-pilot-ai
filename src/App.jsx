@@ -6,10 +6,28 @@ import TranscriptPanel from './components/TranscriptPanel';
 import SetupModal from './components/SetupModal';
 import ScorecardModal from './components/ScorecardModal';
 import QuestionGeneratorModal from './components/QuestionGeneratorModal';
+import LoginPage from './components/LoginPage';
 import { TRACKS } from './data/questionBank';
 import { conductInterviewTurn, generateDiagnosticScorecard } from './services/geminiService';
 
 export default function App() {
+  // Theme state: 'dark' | 'light'
+  const [theme, setTheme] = useState(() => localStorage.getItem('APP_THEME') || 'dark');
+
+  // Auth state
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('APP_USER');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (_) { return null; }
+    }
+    return {
+      name: 'Shagun Mehta',
+      email: 'shagun12mehta@gmail.com',
+      role: 'student',
+      college: 'Engineering Institute of Technology'
+    };
+  });
+
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('GEMINI_API_KEY') || '');
   const [isSetupOpen, setIsSetupOpen] = useState(false);
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
@@ -17,7 +35,7 @@ export default function App() {
   const [scorecardData, setScorecardData] = useState(null);
 
   // Active Session State
-  const [candidateName, setCandidateName] = useState('Shagun Mehta');
+  const [candidateName, setCandidateName] = useState(user?.name || 'Shagun Mehta');
   const [currentTrack, setCurrentTrack] = useState(TRACKS[0]);
   const [currentQuestion, setCurrentQuestion] = useState(TRACKS[0].questions[0]);
   const [role, setRole] = useState(TRACKS[0].defaultRole);
@@ -45,12 +63,31 @@ export default function App() {
   const [transcript, setTranscript] = useState([
     {
       sender: 'AI',
-      text: `Hello Shagun Mehta, welcome to your technical interview for the ${TRACKS[0].defaultRole} role. We are evaluating: ${TRACKS[0].questions[0].title}. Please review the problem constraints on the left, and explain your intuition out loud before typing your code.`,
+      text: `Hello ${user?.name || 'Shagun Mehta'}, welcome to your technical interview for the ${TRACKS[0].defaultRole} role. We are evaluating: ${TRACKS[0].questions[0].title}. Please review the problem constraints on the left, and explain your intuition out loud before typing your code.`,
       timestamp: '00:00'
     }
   ]);
 
   const recognitionRef = useRef(null);
+
+  // Toggle Theme
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    localStorage.setItem('APP_THEME', nextTheme);
+  };
+
+  // Login / Logout Handlers
+  const handleLogin = (userData) => {
+    setUser(userData);
+    setCandidateName(userData.name);
+    localStorage.setItem('APP_USER', JSON.stringify(userData));
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('APP_USER');
+  };
 
   // Save API key
   useEffect(() => {
@@ -60,11 +97,10 @@ export default function App() {
   // Session Timer
   useEffect(() => {
     let timer = null;
-    if (isInterviewActive && !isScorecardOpen) {
+    if (user && isInterviewActive && !isScorecardOpen) {
       timer = setInterval(() => {
         setDurationSeconds(prev => {
           const next = prev + 1;
-          // Dynamically adjust interview stage based on elapsed time & turns
           if (next > 300) setInterviewStage('Optimization & Complexity');
           else if (next > 120) setInterviewStage('Live Implementation');
           return next;
@@ -72,7 +108,7 @@ export default function App() {
       }, 1000);
     }
     return () => clearInterval(timer);
-  }, [isInterviewActive, isScorecardOpen]);
+  }, [user, isInterviewActive, isScorecardOpen]);
 
   // Speech Recognition (Web Speech API)
   useEffect(() => {
@@ -133,7 +169,6 @@ export default function App() {
     }
   };
 
-  // Text-To-Speech function
   const speakAiResponse = (text) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
@@ -147,7 +182,6 @@ export default function App() {
     }
   };
 
-  // Handle a candidate speaking/typing turn
   const handleCandidateTurn = async (candidateSpeech) => {
     const fillerRegex = /\b(um|uh|like|you know|basically|actually|sort of|kind of)\b/gi;
     const matches = candidateSpeech.match(fillerRegex);
@@ -281,10 +315,25 @@ export default function App() {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
+  const isDark = theme === 'dark';
+
+  // If user is not logged in, render Login Page
+  if (!user) {
+    return (
+      <LoginPage
+        onLogin={handleLogin}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+      />
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col font-sans text-slate-100">
+    <div className={`min-h-screen flex flex-col font-sans transition-colors duration-200 ${
+      isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-100 text-slate-900'
+    }`}>
       
-      {/* Top Navbar */}
+      {/* Top Navbar with Theme Switcher & Logout */}
       <Navbar
         apiKey={apiKey}
         onOpenSettings={() => setIsSetupOpen(true)}
@@ -294,6 +343,10 @@ export default function App() {
         isRecording={isRecording}
         onToggleRecording={toggleRecording}
         interviewStage={interviewStage}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        user={user}
+        onLogout={handleLogout}
       />
 
       {/* Main Studio: 3 Columns */}
