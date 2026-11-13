@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PlacementPilot AI — Pitch Deck</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(26, 34, 52, 0.7);
+      --card-border: rgba(66, 133, 244, 0.25);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --google-blue: #4285F4;
+      --google-red: #EA4335;
+      --google-yellow: #FBBC05;
+      --google-green: #34A853;
+      --accent-gradient: linear-gradient(135deg, #4285F4 0%, #a855f7 50%, #ec4899 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    /* Top Action Bar */
+    .action-bar {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding: 12px 20px;
+      background: rgba(18, 24, 38, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .badge-google {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #93c5fd;
+      background: rgba(66, 133, 244, 0.15);
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(66, 133, 244, 0.3);
+    }
+
+    .btn-print {
+      background: var(--google-blue);
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-print:hover {
+      background: #3367d6;
+      transform: translateY(-1px);
+    }
+
+    /* Slides Deck Container */
+    .deck-container {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+
+    /* Single Slide Canvas (16:9 Aspect Ratio) */
+    .slide {
+      background: linear-gradient(145deg, #131b2e 0%, #0d121f 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 48px;
+      min-height: 618px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+    }
+
+    .slide::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--google-blue), var(--google-red), var(--google-yellow), var(--google-green));
+    }
+
+    .slide-header {
+      margin-bottom: 24px;
+    }
+
+    .slide-tag {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--google-blue);
+      margin-bottom: 8px;
+    }
+
+    .slide-title {
+      font-size: 34px;
+      font-weight: 800;
+      font-family: 'Google Sans', sans-serif;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .slide-subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Custom Layout Components */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .stat-box {
+      background: rgba(66, 133, 244, 0.08);
+      border: 1px solid rgba(66, 133, 244, 0.3);
+      border-radius: 14px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--google-blue);
+      font-family: 'Google Sans', sans-serif;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .hero-title {
+      font-size: 54px;
+      font-weight: 800;
+      font-family: 'Google Sans', sans-serif;
+      line-height: 1.15;
+      background: linear-gradient(135deg, #ffffff 40%, #93c5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .code-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #93c5fd;
+    }
+
+    /* Print Stylesheet for Instant 1-Click PDF Export */
+    @media print {
+      body {
+        background: #0b0f19 !important;
+        padding: 0 !important;
+      }
+      .action-bar {
+        display: none !important;
+      }
+      .deck-container {
+        gap: 0 !important;
+        max-width: 100% !important;
+      }
+      .slide {
+        page-break-after: always;
+        break-after: page;
+        min-height: 100vh !important;
+        border-radius: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Action Bar -->
+  <div class="action-bar">
+    <div class="badge-google">
+      <span>⚡ Built with Google AI & Google Cloud</span>
+    </div>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <span style="font-size: 13px; color: var(--text-muted);">Ready to download as PDF:</span>
+      <button class="btn-print" onclick="window.print()">📥 Save / Print as PDF</button>
+    </div>
+  </div>
+
+  <div class="deck-container">
+
+    <!-- SLIDE 1: COVER -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-tag">Google AI Buildathon 2026 · Nationwide Buildathon</div>
+      </div>
+      <div class="slide-content">
+        <div style="max-width: 800px;">
+          <h1 class="hero-title">PlacementPilot AI</h1>
+          <p style="font-size: 22px; color: #94a3b8; margin: 18px 0 32px 0; line-height: 1.4;">
+            The Real-Time Multimodal AI Interview Coach for Bharat's 1.5 Million Graduates.
+          </p>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <span class="code-pill">Gemini Live (Audio)</span>
+            <span class="code-pill">Gemini 1.5 Pro / Flash (Vision)</span>
+            <span class="code-pill">Google Agent Skills</span>
+            <span class="code-pill">Google Cloud Run</span>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>Founder Team: <strong>Team PlacementPilot</strong></div>
+        <div>Slide 1 / 8</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: THE PROBLEM -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-tag">01 · The Problem</div>
+        <h2 class="slide-title">The 80% Campus Placement Failure Bottleneck</h2>
+        <p class="slide-subtitle">Millions of skilled graduates stumble in initial interview rounds due to lack of realistic spoken practice.</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="stat-box">
+            <div class="stat-number">80%+</div>
+            <div class="stat-label">Initial Interview Rejection Rate in Tier-2/3 Colleges</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">500 : 1</div>
+            <div class="stat-label">Student-to-Counselor Ratio in Placement (T&P) Cells</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">₹3,000+</div>
+            <div class="stat-label">Average Cost per Human Mock Interview (Prohibitive)</div>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-top: 24px;">
+          <div class="feature-card">
+            <h3>🔇 The "Silent Coding" Trap</h3>
+            <p>Students practice coding puzzles on LeetCode in complete silence. They know syntax, but freeze when asked to explain architectural trade-offs orally under scrutiny.</p>
+          </div>
+          <div class="feature-card">
+            <h3>❌ The Zero-Feedback Void</h3>
+            <p>When candidates get rejected from campus drives, companies give zero feedback. Students never know if they failed due to algorithmic depth, communication, or anxiety.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>Market Pain: 1.5M+ engineers graduating annually across 3,500+ Indian institutions</div>
+        <div>Slide 2 / 8</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: THE SOLUTION -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-tag">02 · The Solution</div>
+        <h2 class="slide-title">PlacementPilot AI: Realistic, Multimodal Interview Practice</h2>
+        <p class="slide-subtitle">Simulating a senior tech recruiter and hiring manager at 1/100th the cost of human coaching.</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="feature-card" style="border-color: rgba(66, 133, 244, 0.4);">
+            <div style="font-size: 28px;">🎙️</div>
+            <h3>Conversational Spoken Dialogue</h3>
+            <p>Powered by <strong>Gemini Live</strong> with sub-500ms latency. The AI listens, speaks, interrupts rambling, and asks adaptive follow-ups just like a human panel.</p>
+          </div>
+          <div class="feature-card" style="border-color: rgba(168, 85, 247, 0.4);">
+            <div style="font-size: 28px;">💻</div>
+            <h3>Multimodal Code & Canvas</h3>
+            <p>Powered by <strong>Gemini Multimodal Vision</strong>. Inspects live code logic, time/space complexity, syntax, and whiteboard diagrams in real time.</p>
+          </div>
+          <div class="feature-card" style="border-color: rgba(52, 168, 83, 0.4);">
+            <div style="font-size: 28px;">📊</div>
+            <h3>360° Diagnostic Scorecard</h3>
+            <p>Instant rubric-based report scoring Conceptual Accuracy, Communication Clarity, and Filler-Words, paired with a targeted 7-day remediation roadmap.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>Core Value: Unlimited, 24/7 personalized mock interviews with zero human scheduling bottlenecks</div>
+        <div>Slide 3 / 8</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: PRODUCT EXPERIENCE -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-tag">03 · Product Workflow</div>
+        <h2 class="slide-title">How the Candidate Experience Works</h2>
+        <p class="slide-subtitle">A seamless 4-stage simulation mimicking real-world FAANG and corporate campus recruitment.</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-4">
+          <div class="feature-card">
+            <span class="code-pill">Phase 01</span>
+            <h3>Role & Track Setup</h3>
+            <p>Candidate selects company track (TCS, Infosys, Amazon, Startups) and role (SDE-1, Data Analyst, Cloud Engineer).</p>
+          </div>
+          <div class="feature-card">
+            <span class="code-pill">Phase 02</span>
+            <h3>Live Spoken Interview</h3>
+            <p>Webcam and microphone stream audio via WebSockets to Gemini Live. Natural conversational back-and-forth.</p>
+          </div>
+          <div class="feature-card">
+            <span class="code-pill">Phase 03</span>
+            <h3>Interactive Coding</h3>
+            <p>Candidate solves problems in Monaco Editor. Gemini Vision reviews code live and asks candidates to verbally defend logic.</p>
+          </div>
+          <div class="feature-card">
+            <span class="code-pill">Phase 04</span>
+            <h3>Actionable Scorecard</h3>
+            <p>Instant breakdown of Conceptual Depth, Spoken Clarity, and Pacing with timestamped improvement suggestions.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>User Experience: Zero friction, accessible on any standard laptop browser with standard webcam/mic</div>
+        <div>Slide 4 / 8</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: TECHNICAL ARCHITECTURE -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-tag">04 · Technical Architecture</div>
+        <h2 class="slide-title">Deep Google AI & Cloud Infrastructure</h2>
+        <p class="slide-subtitle">A scalable, serverless microservices architecture built exclusively on Google’s enterprise stack.</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="feature-card">
+            <h3 style="color: var(--google-blue);">🧠 Google AI Intelligence Layer</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 14px; color: var(--text-muted); margin-top: 8px;">
+              <li>• <strong>Gemini Live API:</strong> Low-latency bidirectional WebSocket voice streaming with realistic turn-taking.</li>
+              <li>• <strong>Gemini 1.5 Flash / Pro:</strong> Vision-based code AST inspection, complexity verification, and architectural whiteboard evaluation.</li>
+              <li>• <strong>Gemma:</strong> Lightweight local inference for acoustic telemetry, speech pacing, and filler-word detection.</li>
+              <li>• <strong>Google Agent Skills:</strong> Enforces deterministic interview state machines and objective rubric evaluation.</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3 style="color: var(--google-green);">☁️ Google Cloud Infrastructure</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 14px; color: var(--text-muted); margin-top: 8px;">
+              <li>• <strong>Google Cloud Run:</strong> Auto-scales FastAPI/Node.js microservices from zero to thousands of containers during campus drives.</li>
+              <li>• <strong>Cloud Firestore:</strong> Real-time persistence for live session state, dynamic questions, and instant scorecards.</li>
+              <li>• <strong>Cloud Storage (GCS):</strong> Encrypted storage for session code snapshots and downloadable PDF reports.</li>
+              <li>• <strong>Cloud CDN & Monitoring:</strong> Sub-50ms regional latency across India with automated telemetry and alerting.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>Architecture: Resilient, auto-scaling, and HIPAA/FERPA privacy-compliant with 30-day data lifecycle purge</div>
+        <div>Slide 5 / 8</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: MARKET SIZE -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-tag">05 · Market Opportunity</div>
+        <h2 class="slide-title">Massive, High-Urgency Addressable Market</h2>
+        <p class="slide-subtitle">Capturing the urgent transition toward AI-driven recruitment and employability readiness.</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="stat-box">
+            <div class="stat-number">$7.8B</div>
+            <div class="stat-label">Global Tech Interview & Employability Market (TAM)</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">35 Million</div>
+            <div class="stat-label">Higher Education Undergrads in India across 3,500+ Colleges (SAM)</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">250,000</div>
+            <div class="stat-label">Target Students Across 100 Partner Institutions in Year 1 (SOM)</div>
+          </div>
+        </div>
+        <div class="feature-card" style="margin-top: 24px;">
+          <h3>🚀 Why Now? The GenAI Inflection Point</h3>
+          <p>Until Gemini Live, voice-based AI interviewers were impossible due to 3–5 second latency and robotic turn-taking. With Google's native multimodal audio-visual models, we can now deliver a human-grade mock interview experience for less than ₹20 per session.</p>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>Market Tailwinds: NIRF rankings & NAAC accreditation enforce strict placement outcome metrics on colleges</div>
+        <div>Slide 6 / 8</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: BUSINESS MODEL -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-tag">06 · Business Model & Unit Economics</div>
+        <h2 class="slide-title">High-Margin Dual B2B + B2C Revenue Model</h2>
+        <p class="slide-subtitle">Combining viral bottom-up student adoption with predictable top-down institutional SaaS contracts.</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="feature-card">
+            <div style="font-size: 13px; font-weight: 700; color: var(--google-blue);">PRIMARY REVENUE ENGINE</div>
+            <h3>B2B Institutional SaaS (Colleges & T&P Cells)</h3>
+            <p>Annual licensing sold directly to College Placement Offices at <strong>₹500–₹800 / student / year</strong> (₹5–10 Lakhs per college).</p>
+            <p><strong>Value Prop:</strong> T&P officers get an admin dashboard tracking batch readiness, automated mock placement cohorts, and higher placement statistics.</p>
+          </div>
+          <div class="feature-card">
+            <div style="font-size: 13px; font-weight: 700; color: var(--google-green);">BOTTOM-UP DISTRIBUTION</div>
+            <h3>B2C Direct Student Freemium</h3>
+            <p><strong>Free Tier:</strong> 1 full diagnostic mock interview + basic scorecard.</p>
+            <p><strong>Placement Season Pass:</strong> <strong>₹399 / month</strong> or <strong>₹999 / season</strong> for unlimited interviews, company tracks, and video replays.</p>
+          </div>
+        </div>
+        <div class="stat-box" style="margin-top: 20px; padding: 16px;">
+          <div style="font-size: 15px; color: var(--text-main); font-weight: 600;">
+            Unit Economics: Compute & API Cost <span style="color: var(--google-green);">≈ ₹18 per 15-minute interview</span> &rarr; Gross Margin <span style="color: var(--google-blue);">85%+</span>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>Financial Projection: ₹2.5 Crore ARR targeted in Year 1 across 30 partner campuses and 40k active students</div>
+        <div>Slide 7 / 8</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: 48-HR BUILD PLAN & TEAM -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-tag">07 · Execution & City Buildathon Plan</div>
+        <h2 class="slide-title">48-Hour Build Blueprint (20–21 Nov)</h2>
+        <p class="slide-subtitle">Clear technical milestones to deliver a working end-to-end product for the jury showcase.</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="feature-card">
+            <h3>📅 Day 1: Streaming & Intelligence</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--text-muted); margin-top: 8px;">
+              <li>• <strong>Setup:</strong> Google AI Studio API integration & Next.js frontend.</li>
+              <li>• <strong>Audio:</strong> WebSocket bidirectional voice streaming via Gemini Live.</li>
+              <li>• <strong>Canvas:</strong> Monaco Editor integration with Gemini Vision frame grabber.</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>📅 Day 2: Diagnostic Agent & Showcase</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--text-muted); margin-top: 8px;">
+              <li>• <strong>Agent:</strong> Rubric evaluation engine generating structured JSON scorecards.</li>
+              <li>• <strong>Cloud Deploy:</strong> Cloud Run deployment with Firestore persistence.</li>
+              <li>• <strong>Live Demo:</strong> On-stage 3-minute live spoken mock interview & instant scorecard.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="feature-card" style="margin-top: 18px; text-align: center; background: rgba(66, 133, 244, 0.1);">
+          <div style="font-size: 16px; font-weight: 700; color: white;">Ready to build and scale with Google AI & Google Cloud</div>
+          <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Selected for the City Buildathon &rarr; Regional Showcase &rarr; Grand Finale Bengaluru</div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>PlacementPilot AI · Nationwide Buildathon for Founders</div>
+        <div>Slide 8 / 8</div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
